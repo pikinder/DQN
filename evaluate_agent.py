@@ -12,7 +12,7 @@ if __name__ == '__main__':
     config = pong_config
     config['state_memory']=1 # prevent allocating a lot
 
-    param_dir = '/Users/pikinder/Dropbox/github/DQN/log/2017-03-20_17-01-26_Pong-v0_True'
+    param_dir = 'log/2017-03-20_17-01-26_Pong-v0_True'
     load_episode = 1000
 
     log_dir = None#get_log_dir('log', 'evaluation_'+config['game']+'_'+str(config['double_q']))
