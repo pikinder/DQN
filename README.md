@@ -7,6 +7,15 @@ This is a side project to learn more about reinforcement learning. The goal is t
 * Loss clipping
 * Andrej Karpathy's pre-processing
 
+## Important details and observations
+* On the atari games, the replay memory must use uint8 to limit memory usage
+* It is normal that the code appears to learn not much for a couple of hours
+* Even though the code learns well on the Pong evironment, over-estimation of the q-values still occurs on classic control tasks. (Have to check whether this is the case for cartpole with DDQN). This would indicate that Double DQN does not fully solve the overestimation problem, but just reduces or delays its effect. But I have to verify this.
+
+## Things to be updated
+* Verifying how to sample as quick as possible from the replay memory.
+* Storing the replay memory directly on GPU?
+
 ## Learning on the Pong environment
 Requires about 8 hours on a NVidia Titan X
 
