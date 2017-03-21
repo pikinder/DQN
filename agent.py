@@ -44,8 +44,6 @@ class QAgent(object):
         self.steps = 0
 
     def assign_train_to_target(self):
-        from pie.util.timing import tic,toc
-        tic()
         if self.config['double_q']:
             vars = tf.trainable_variables()
             train_vars = [v for v in vars if v.name.startswith('Q_network/')]
@@ -53,7 +51,6 @@ class QAgent(object):
             target_vars = [v for v in vars if v.name.startswith('T_network/')]
             target_vars.sort(key=lambda x:x.name)
             self.session.run([v[0].assign(v[1]) for v in zip(target_vars,train_vars)])
-        toc()
 
     def _update_training_reward(self,reward):
         self.session.run(self.training_reward.assign(reward))
