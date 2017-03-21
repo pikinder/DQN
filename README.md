@@ -1,5 +1,7 @@
 # Deep Q Networks in tensorflow
 
+This is a side project to learn more about reinforcement learning. The goal is to have a relatively simple implementation of Deep Q Networks that can learn on (some) of the Atari Games. 
+
 ## Tricks used
 * Double DQN
 * Loss clipping
