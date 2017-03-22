@@ -1,7 +1,11 @@
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import print_function
+
 import numpy as np
 import tensorflow as tf
 import gym
-from util import Experience
+from replay import Experience
 
 
 class QAgent(object):
@@ -116,7 +120,7 @@ class QAgent(object):
                 if self.steps % 1000 == 0:
                     self.train_writer.add_summary(summaries, global_step=self.steps)
                 if self.steps % self.config['double_q_freq'] == 0.:
-                    print "double q swap"
+                    print("double q swap")
                     self.assign_train_to_target()
 
         return total_reward
