@@ -14,13 +14,13 @@ _It is not an exact reproduction of the original paper._
 * Re-executing the actions on the dropped frames is handled differently by Gym. 
 
 # Notes
-* It is normal that the code appears to learn not much for a couple of hours. Requires about 8 hours on a NVidia Titan X to do something sensible on Pong. 
+* It is normal that the code appears to learn not much for a couple of hours. Requires about 8 hours on a NVidia Titan X to do something sensible on Pong. But is not godlike ;). 
 * Even though the code learns well on the Pong evironment, over-estimation of the q-values still occurs on classic control tasks. (Have to check whether this is the case for cartpole with DDQN). This would indicate that Double DQN does not fully solve the overestimation problem, but just reduces or delays its effect. But I have to verify this.
 
 
 ## Content
 * **train_agent.py** contains the code to train and save the model. It will write summaries of the training reward per episode, the validation reward, the mse, the regularisation parameter, the mean target q value.
-* **evaluate_agent.py** has code to load a learned model and let it run indefinitely. Currently only pong is supported. By default it will run the included model that is trained for 1550 episodes on Pong. It's performance is mixed. It plays ok, but loses most games. The script shows the following visualisation of game, q-function and value history+reward.
+* **evaluate_agent.py** has code to load a learned model and let it run indefinitely. Currently only pong is supported. By default it will run the included model that is trained for 1550 episodes on Pong. It's performance is ok, it can win games but it is not unbeatable. The script shows the following visualisation of game, q-function and value history+reward.
 ![alt text](readme/evaluation_output.png?raw=true "evaluation visualisation")
 
 * **dqn.py** the deep q network implemented in tensorflow. The code supports standard DQN [1] and Double DQN [3]. 
