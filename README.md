@@ -8,8 +8,9 @@ This is a side project to learn more about reinforcement learning. The goal is t
 * **evaluate_agent.py** has code to load a learned model and let it run indefinitely. Currently only pong is supported. By default it will run the included model that is trained for 1000 episodes on Pong. It's performance is mixed. It plays ok, but loses most games. 
 * **dqn.py** the deep q network implemented in tensorflow. The code supports standard DQN [1] and Double DQN [3]. 
 * **agent.py** class for interacting with the environement. 
+* **replay.py** replay memory implementation
 * **config.py** contains the parameter settings for CartPole, AcroBot and Pong.
-* **util.py** some basic helper functions and the replay memory implementation
+* **util.py** some basic helper functions
 * **saves/** Checkpoints networks that work reliably on the pong environment
 
 ## Implementation details
