@@ -16,7 +16,7 @@ This is a side project to learn more about reinforcement learning. The goal is t
 ## Implementation details
 * The architecture from DeepMind's atari nature publication [2].
 * Support for standard DQN (without target network) [1] and Double DQN [3].
-* Loss clipping from DeepMind's nature paper[2]. For the implementation I looked into [6]. 
+* Loss clipping from DeepMind's nature paper[2]. For the implementation I looked at [6]. 
 * Andrej Karpathy's pre-processing was used here. This works only on breakout (I think) and pong (for sure). 
 * On the atari games, the replay memory must use uint8 to limit memory usage.
 
