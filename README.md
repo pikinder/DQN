@@ -1,6 +1,8 @@
 # Deep Q Networks in tensorflow
 
-This is a side project to learn more about reinforcement learning. The goal is to have a relatively simple implementation of Deep Q Networks [1,2] that can learn on (some) of the Atari Games. 
+This is a side project to learn more about reinforcement learning. 
+The goal is to have a relatively simple implementation of Deep Q Networks [1,2] that can learn on (some) of the Atari Games. 
+_It is not an exact reproduction of the original paper._
 
 
 ## Content
