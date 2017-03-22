@@ -5,7 +5,9 @@ This is a side project to learn more about reinforcement learning. The goal is t
 
 ## Content
 * **train_agent.py** contains the code to train and save the model. It will write summaries of the training reward per episode, the validation reward, the mse, the regularisation parameter, the mean target q value.
-* **evaluate_agent.py** has code to load a learned model and let it run indefinitely. Currently only pong is supported. By default it will run the included model that is trained for 1000 episodes on Pong. It's performance is mixed. It plays ok, but loses most games. 
+* **evaluate_agent.py** has code to load a learned model and let it run indefinitely. Currently only pong is supported. By default it will run the included model that is trained for 1550 episodes on Pong. It's performance is mixed. It plays ok, but loses most games. The script shows the following visualisation of game, q-function and value history+reward.
+![alt text](readme/evaluation_output.png?raw=true "evaluation visualisation")
+
 * **dqn.py** the deep q network implemented in tensorflow. The code supports standard DQN [1] and Double DQN [3]. 
 * **agent.py** class for interacting with the environement. 
 * **replay.py** replay memory implementation
