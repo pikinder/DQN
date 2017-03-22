@@ -4,6 +4,19 @@ This is a side project to learn more about reinforcement learning.
 The goal is to have a relatively simple implementation of Deep Q Networks [1,2] that can learn on (some) of the Atari Games. 
 _It is not an exact reproduction of the original paper._
 
+## Implementation details
+* The neural net architecture from DeepMind's atari nature publication [2] is used.
+* The code supprts standard DQN (without target network) [1] and Double DQN [3].
+* Loss clipping from DeepMind's nature paper[2] is used. For the implementation I looked at [6]. 
+* Andrej Karpathy's pre-processing was used here [7]. This works only on breakout (I think) and pong (for sure). 
+* On the atari games, the replay memory must use uint8 to limit memory usage.
+* OpenAI Gym uses random frame skipping (between 2 and 5) instead of 4 used in the original papers. This might hinder the performance since actions have a non-deterministic outcome.
+* Re-executing the actions on the dropped frames is handled differently by Gym. 
+
+# Notes
+* It is normal that the code appears to learn not much for a couple of hours. Requires about 8 hours on a NVidia Titan X to do something sensible on Pong. 
+* Even though the code learns well on the Pong evironment, over-estimation of the q-values still occurs on classic control tasks. (Have to check whether this is the case for cartpole with DDQN). This would indicate that Double DQN does not fully solve the overestimation problem, but just reduces or delays its effect. But I have to verify this.
+
 
 ## Content
 * **train_agent.py** contains the code to train and save the model. It will write summaries of the training reward per episode, the validation reward, the mse, the regularisation parameter, the mean target q value.
@@ -17,16 +30,6 @@ _It is not an exact reproduction of the original paper._
 * **util.py** some basic helper functions
 * **saves/** Checkpoints networks that work reliably on the pong environment
 
-## Implementation details
-* The architecture from DeepMind's atari nature publication [2].
-* Support for standard DQN (without target network) [1] and Double DQN [3].
-* Loss clipping from DeepMind's nature paper[2]. For the implementation I looked at [6]. 
-* Andrej Karpathy's pre-processing was used here [7]. This works only on breakout (I think) and pong (for sure). 
-* On the atari games, the replay memory must use uint8 to limit memory usage.
-
-# Notes
-* It is normal that the code appears to learn not much for a couple of hours. Requires about 8 hours on a NVidia Titan X to do something sensible on Pong. 
-* Even though the code learns well on the Pong evironment, over-estimation of the q-values still occurs on classic control tasks. (Have to check whether this is the case for cartpole with DDQN). This would indicate that Double DQN does not fully solve the overestimation problem, but just reduces or delays its effect. But I have to verify this.
 
 ## Things to be updated
 * Verifying how to sample as quick as possible from the replay memory.
