@@ -3,16 +3,16 @@ from __future__ import division
 from __future__ import print_function
 
 import numpy as np
-from dqn import VisualDQN, StateDQN
-from util import preprocess_pong, preprocess_cartpole
+from dqn import VisualDQN, StateDQN,AtariDQN
+from util import preprocess_pong, preprocess_cartpole,preprocess_atari
 
 breakout_config = {
     'double_q': True,
     'double_q_freq': 10000,
 
     'game': 'Breakout-v0',
-    'frame': preprocess_pong,
-    'q': VisualDQN,
+    'frame': preprocess_atari,
+    'q': AtariDQN,
     'q_params': {},
     'actions': 6,
     'state_dtype': np.uint8,

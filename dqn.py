@@ -110,3 +110,26 @@ class VisualDQN(DQN):
     def _create_summaries(self):
         super(VisualDQN, self)._create_summaries()
         tf.summary.image(name='x_batch', tensor=self.x_batch[:, :, :, 1:], max_outputs=8)
+
+class AtariDQN(DQN):
+    """
+    DQN that acts on a visual state
+    """
+
+    def _create_outputs(self, x):
+        with tf.name_scope('shift_and_scale'):
+            x = x//127.5-1.
+
+        x = tf.layers.conv2d(x, filters=32, kernel_size=(8, 8), strides=(4, 4), padding='valid', activation=tf.nn.relu,
+                             name='conv_1')
+        x = tf.layers.conv2d(x, filters=64, kernel_size=(4, 4), strides=(2, 2), padding='valid', activation=tf.nn.relu,
+                             name='conv_2')
+        x = tf.layers.conv2d(x, filters=64, kernel_size=(3, 3), strides=(1, 1), padding='valid', activation=tf.nn.relu,
+                             name='conv_3')
+        x = tf.reshape(x, shape=[x.get_shape().as_list()[0], -1], name='flatten')
+        x = tf.layers.dense(x, units=512, activation=tf.nn.relu, name='fc1')
+        return tf.layers.dense(x, units=self.num_actions, activation=None, name='q_hat')
+
+    def _create_summaries(self):
+        super(AtariDQN, self)._create_summaries()
+        tf.summary.image(name='x_batch', tensor=self.x_batch[:, :, :, 1:], max_outputs=8)
