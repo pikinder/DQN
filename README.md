@@ -8,7 +8,7 @@ _It is not an exact reproduction of the original paper._
 * The neural net architecture from DeepMind's atari nature publication [2] is used.
 * The code supprts standard DQN (without target network) [1] and Double DQN [3].
 * Loss clipping from DeepMind's nature paper[2] is used. For the implementation I looked at [6]. 
-* Andrej Karpathy's pre-processing was used here [7]. This works only on breakout (I think) and pong (for sure). 
+* Andrej Karpathy's pre-processing was used here [7] on Pong. Work in progress is more general atari preprocessing that works. (Currently evaluating)
 * On the atari games, the replay memory must use uint8 to limit memory usage.
 * OpenAI Gym uses random frame skipping (between 2 and 5) instead of 4 used in the original papers. This might hinder the performance since actions have a non-deterministic outcome.
 * Re-executing the actions on the dropped frames is handled differently by Gym. 
@@ -44,6 +44,7 @@ The code is only tested on CartPole-v0, CartPole-v1, AcroBot-V0, Pong-v0
 * OpenAI gym
 * Matplotlib
 * Numpy
+* skimage for grayscale and resizing
 
 ## References
 1. [Mnih et al. Playing Atari with Deep Reinforcement Learning](https://www.cs.toronto.edu/~vmnih/docs/dqn.pdf)
