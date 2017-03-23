@@ -118,7 +118,7 @@ class AtariDQN(DQN):
 
     def _create_outputs(self, x):
         with tf.name_scope('shift_and_scale'):
-            x = x//127.5-1.
+            x = x/127.5-1.
 
         x = tf.layers.conv2d(x, filters=32, kernel_size=(8, 8), strides=(4, 4), padding='valid', activation=tf.nn.relu,
                              name='conv_1')
