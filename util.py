@@ -23,6 +23,11 @@ def get_log_dir(log_base, suffix):
 
 
 def preprocess_cartpole(frame):
+    """
+    add dimension...
+    :param frame:
+    :return:
+    """
     return frame[np.newaxis,:,np.newaxis]
 
 
@@ -34,7 +39,7 @@ def preprocess_atari(frame):
     """
     frame = frame[35:195,:]
     frame = rgb2gray(frame)*255.
-    frame = resize(frame,(80,80))
+    frame = resize(frame,(84,84))
     return frame[:,:,np.newaxis].astype(np.uint8)
 
 def preprocess_pong(frame):

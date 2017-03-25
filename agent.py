@@ -12,12 +12,15 @@ class QAgent(object):
     def __init__(self, config, log_dir):
         self.config = config
         self.log_dir = log_dir
+
         self.env = gym.make(config['game'])
+
         self.replay_memory = Experience(
             memory_size=config['state_memory'],
             state_shape=config['state_shape'],
             dtype=config['state_dtype']
         )
+
         self.net = config['q'](
             batch_size=config['batch_size'],
             state_shape=config['state_shape']+[config['state_time']],
@@ -48,6 +51,11 @@ class QAgent(object):
         self.steps = 0
 
     def assign_train_to_target(self):
+        """
+        Update the parameters of the target network
+
+        :return:
+        """
         if self.config['double_q']:
             vars = tf.trainable_variables()
             train_vars = [v for v in vars if v.name.startswith('Q_network/')]
@@ -57,17 +65,29 @@ class QAgent(object):
             self.session.run([v[0].assign(v[1]) for v in zip(target_vars,train_vars)])
 
     def _update_training_reward(self,reward):
+        """
+        set the value of the training reward.
+        This ensures it is stored and visualised on the tensorboard
+        """
         self.session.run(self.training_reward.assign(reward))
 
     def _update_validation_reward(self,reward):
+        """
+        set the value of the validation reward.
+        This ensures it is stored and visualised on the tensorboard
+        """
         self.session.run(self.validation_reward.assign(reward))
 
     def get_training_state(self):
+        """
+        Get the last state
+        :return:
+        """
         return self.replay_memory.get_last_state(self.config['state_time'])
 
     def sample_action(self,state,epsilon):
         """
-        Sample an action
+        Sample an action for the state according to the epsilon greedy strategy
 
         :param state:
         :param epsilon:
@@ -142,13 +162,13 @@ class QAgent(object):
         """
         Perform an action in the environment
 
-        :param epsilon:
-        :param state:
-        :param store:
-        :return:
+        :param epsilon: the epsilon for the epsilon-greedy strategy
+        :param state: the state for which to compute the action
+        :param store: if true, the state is added to the replay memory
+        :return: the observed state (processed), the reward and whether the state is final
         """
         action = self.sample_action(state=state,epsilon=epsilon)
-        raw_frame, reward, done, _ = self.env.step(action)
+        raw_frame, reward, done, info = self.env.step(action)
 
         # Clip rewards to -1,0,1
         reward = np.sign(reward)
@@ -164,33 +184,41 @@ class QAgent(object):
 
     def train_batch(self):
         """
+        Sample a batch of training samples from the replay memory.
+        Compute the target Q values
+        Perform one SGD update step
 
-        :return:
+        :return: summaries, step
+        summaries: the tensorflow summaries that can be put into a log.
+        step, the global step from tensorflow. This represents the number of updates
         """
+
+        # Sample experience
         xp_states, xp_actions, xp_rewards, xp_done, xp_next = self.replay_memory.sample_experience(
             self.config['batch_size'],
             self.config['state_time']
         )
 
-        # Create the mask for the training...
+        # Create a mask on which output to update
         q_mask = np.zeros((self.config['batch_size'], self.config['actions']))
         for idx, a in enumerate(xp_actions):
             q_mask[idx, a] = 1
 
-        # Use the current network to select actions...
+        # Use the target network to value the next states
         next_actions, next_values = self.session.run(
             [self.net.q_batch,self.net.t_batch],
             feed_dict={self.net.x_batch: xp_next.astype(np.float32)}
         )
 
+        # Combine the reward and the value of the next state into the q-targets
         q_next = np.array([
             next_values[idx,next_actions[idx].argmax()]
             for idx in range(self.config['batch_size'])
         ])
         q_next *= (1.-xp_done)
-
         q_targets = (xp_rewards + self.config['gamma']*q_next)
 
+        # Perform the update
         feed = {
             self.net.x_batch: xp_states.astype(np.float32),
             self.net.q_targets: q_targets[:,np.newaxis]*q_mask,

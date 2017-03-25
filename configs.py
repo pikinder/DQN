@@ -16,14 +16,14 @@ breakout_config = {
     'q_params': {},
     'actions': 6,
     'state_dtype': np.uint8,
-    'state_shape': [80, 80],
+    'state_shape': [84, 84],
     'state_memory': 10 ** 6,
     'state_time': 4,
 
     'episodes': 10 ** 7,
-    'episodes_validate': 5,
+    'episodes_validate': 100,
     'episodes_validate_runs': 2,
-    'episodes_save_interval': 50,
+    'episodes_save_interval': 100,
 
     'batch_size': 32,
 

@@ -5,7 +5,7 @@ from __future__ import print_function
 import numpy as np
 from matplotlib import pyplot as plt
 
-
+from gym.envs.atari.atari_env import ACTION_MEANING
 def disable_ticks():
     plt.tick_params(
                 axis='x',          # changes apply to the x-axis
@@ -35,7 +35,7 @@ def init_figure(actions):
     plt.subplot(2,2,2)
     ax = plt.gca()
     plots['Qs'] = (ax.bar(range(actions),np.zeros(actions)),ax)
-    plt.xticks(.5+np.r_[:actions],['None','None','Up','Down','Up','Down'])
+    plt.xticks(.5+np.r_[:actions],[ACTION_MEANING[a] for a in range(actions)])
     plt.ylabel('Q(s,a)/max_a|Q(s,a)|')
     plt.ylim(-1,1)
     plt.subplot(2,1,2)

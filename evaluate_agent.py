@@ -17,7 +17,7 @@ if __name__ == '__main__':
 
     config = pong_config
     config['state_memory']=1 # prevent allocating of a huge chunk of memory
-    epsilon = 0.00 # The epsilon for the strategy
+    epsilon = 0.10 # The epsilon for the strategy
     params = 'saves/PONG_1550.ckpt'
     with tf.device('/cpu:0'):
         agent = QAgent(config=config, log_dir=None)
@@ -35,7 +35,7 @@ if __name__ == '__main__':
             steps += 1
             q = agent.session.run(agent.net.q,feed_dict={agent.net.x:state[np.newaxis].astype(np.float32)})
 
-            new_frame, reward, done = agent.act(state=state, epsilon=0.01, store=False)
+            new_frame, reward, done = agent.act(state=state, epsilon=epsilon, store=False)
             state = agent._update_state(old_state=state, new_frame=new_frame)
             total_reward += reward
             if reward != 0:
