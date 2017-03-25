@@ -34,7 +34,7 @@ _It is not an exact reproduction of the original paper._
 ## Things to be updated
 * Verifying how to sample as quick as possible from the replay memory.
 * Storing the replay memory directly on GPU?
-
+* Making sure the GPU is better utilised. 
 ## Limitations
 The code is only tested on CartPole-v0, CartPole-v1, AcroBot-V0, Pong-v0
 
