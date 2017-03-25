@@ -17,6 +17,8 @@ class DQN(object):
         with tf.variable_scope('Q_input'):
             self.x_batch = tf.placeholder(tf.float32, [batch_size] + state_shape, name='x_batch')
             self.x = tf.placeholder(tf.float32, [1] + state_shape, name='x_single')
+
+        with tf.name_scope('Q_param'):
             self.global_step = tf.Variable(0, name='global_step', trainable=False)
             self.regul_param = tf.Variable(regul_param, name='regul_param', trainable=False)
 
@@ -35,16 +37,26 @@ class DQN(object):
 
         with tf.variable_scope('Q_trainer'):
             self._train_op = self._create_train_ops(optimiser)
+
         if summaries:
             with tf.name_scope('Q_summary'):
                 self._create_summaries()
+
+        with tf.name_scope('Update_T'):
+            self.assign_op = self._create_assign_op()
+
+    def _create_assign_op(self):
+        vars = tf.trainable_variables()
+        train_vars = [v for v in vars if v.name.startswith('Q_network/')]
+        train_vars.sort(key=lambda x:x.name)
+        target_vars = [v for v in vars if v.name.startswith('T_network/')]
+        target_vars.sort(key=lambda x:x.name)
+        return  [v[0].assign(v[1]) for v in zip(target_vars,train_vars)]
 
     def _create_summaries(self):
         tf.summary.scalar(name='q_regul', tensor=self.regul_param)
         tf.summary.scalar(name='q_mse', tensor=self.loss)
         tf.summary.scalar(name='q_target_mean', tensor=tf.reduce_mean(self.q_targets * self.q_mask))
-        #tf.summary.histogram(name='q_target_hist', values=tf.reduce_sum(self.q_targets * self.q_mask, axis=1))
-        #tf.summary.histogram(name='q_hist', values=tf.reduce_sum(self.q_batch, axis=1))
 
     def _create_outputs(self, x):
         """
@@ -73,8 +85,6 @@ class DQN(object):
         if optimiser is None:
             optimiser = tf.train.RMSPropOptimizer(learning_rate=0.00025, momentum=0.95, epsilon=0.01)
         grads_and_vars = optimiser.compute_gradients(self.loss, var_list=[v for v in tf.trainable_variables() if v.name.startswith('Q_network/')])
-        #for v,g in grads_and_vars:
-        #    tf.summary.histogram(name=v.name+'_grad_hist',values=g)
         train_op = optimiser.apply_gradients(grads_and_vars=grads_and_vars, global_step=self.global_step)
         return train_op
 

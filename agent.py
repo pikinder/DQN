@@ -33,7 +33,7 @@ class QAgent(object):
         if not self.config['double_q']:
             self.net.t_batch = self.net.q_batch
 
-        with tf.variable_scope('RL'):
+        with tf.variable_scope('RL_summary'):
             self.episode = tf.Variable(0.,name='episode')
             self.training_reward = tf.Variable(0.,name='training_reward')
             self.validation_reward = tf.Variable(0.,name='validation_reward')
@@ -43,6 +43,8 @@ class QAgent(object):
         # Create tensorflow variables
         self.session = tf.Session()
         self.session.run(tf.global_variables_initializer())
+        self.update_target_network()
+
         self.summaries = tf.summary.merge_all()
         if log_dir is not None:
             self.train_writer = tf.summary.FileWriter(self.log_dir, self.session.graph)
@@ -50,19 +52,14 @@ class QAgent(object):
         self.epsilon = 1.0
         self.steps = 0
 
-    def assign_train_to_target(self):
+    def update_target_network(self):
         """
         Update the parameters of the target network
 
         :return:
         """
         if self.config['double_q']:
-            vars = tf.trainable_variables()
-            train_vars = [v for v in vars if v.name.startswith('Q_network/')]
-            train_vars.sort(key=lambda x:x.name)
-            target_vars = [v for v in vars if v.name.startswith('T_network/')]
-            target_vars.sort(key=lambda x:x.name)
-            self.session.run([v[0].assign(v[1]) for v in zip(target_vars,train_vars)])
+            self.session.run(self.net.assign_op)
 
     def _update_training_reward(self,reward):
         """
@@ -98,7 +95,7 @@ class QAgent(object):
         else:
             return self.session.run(self.net.q, feed_dict={self.net.x: state[np.newaxis].astype(np.float32)})[0].argmax()
 
-    def _update_state(self,old_state,new_frame):
+    def update_state(self, old_state, new_frame):
         """
 
         :param old_state:
@@ -110,11 +107,16 @@ class QAgent(object):
             new_frame
         ], axis=2)
 
-    def _reset_state(self):
+    def reset_to_zero_state(self):
+        """
+        Reset the state history to zeros and reset the environment to fill the first state
+        :return:
+        """
         return np.concatenate([
                     np.zeros(self.config['state_shape']+[self.config['state_time']-1]),
                     self.config['frame'](self.env.reset())
                 ],axis=2)
+
 
     def update_epsilon_and_steps(self):
         if self.steps > self.config['step_startrl']:
@@ -123,36 +125,59 @@ class QAgent(object):
 
 
     def train_episode(self):
-        state = self._reset_state()
-        for s_idx in range(state.shape[-1]-1):
-            self.replay_memory.add(state[:,:,s_idx],np.random.randint(self.config['actions']),0,True)
+        # Load the last state and add a reset
+        state = self.update_state(
+            self.get_training_state(),
+            self.config['frame'](self.env.reset())
+        )
 
+        # Store the starting state in memory
+        self.replay_memory.add(
+            state = state[:,:,-1],
+            action = np.random.randint(self.config['actions']),
+            reward = 0.,
+            done = False
+        )
+
+        # Use flags to signal the end of the episode and for pressing the start button
         done = False
+        press_fire = True
+
         total_reward = 0
         while not done:
-            self.update_epsilon_and_steps()
-            new_frame,reward,done = self.act(state,self.epsilon,True)
-            state = self._update_state(state,new_frame)
+            if press_fire: # start the episode
+                press_fire = False
+                new_frame,reward,done = self.act(state,-1,True)
+
+            else:
+                self.update_epsilon_and_steps()
+                new_frame,reward,done = self.act(state,self.epsilon,True)
+            state = self.update_state(state, new_frame)
             total_reward += reward
 
             if self.steps > self.config['step_startrl']:
                 summaries,_ = self.train_batch()
-                if self.steps % 1000 == 0:
+                if self.steps % self.config['tensorboard_interval'] == 0:
                     self.train_writer.add_summary(summaries, global_step=self.steps)
                 if self.steps % self.config['double_q_freq'] == 0.:
                     print("double q swap")
-                    self.assign_train_to_target()
+                    self.update_target_network()
 
         return total_reward
 
 
     def validate_episode(self,epsilon,visualise=False):
-        state = self._reset_state()
+        state = self.reset_to_zero_state()
         done = False
+        press_fire = True
         total_reward = 0.
         while not done:
-            new_frame, reward, done = self.act(state=state, epsilon=epsilon, store=False)
-            state = self._update_state(old_state=state, new_frame=new_frame)
+            if press_fire:
+                press_fire = False
+                new_frame, reward, done = self.act(state=state, epsilon=-1, store=False)
+            else:
+                new_frame, reward, done = self.act(state=state, epsilon=epsilon, store=False)
+            state = self.update_state(old_state=state, new_frame=new_frame)
             total_reward += reward
             if visualise:
                 self.env.render()
@@ -162,12 +187,15 @@ class QAgent(object):
         """
         Perform an action in the environment
 
-        :param epsilon: the epsilon for the epsilon-greedy strategy
+        :param epsilon: the epsilon for the epsilon-greedy strategy. If epsilon is -1, the no-op will be used in the atari games.
         :param state: the state for which to compute the action
         :param store: if true, the state is added to the replay memory
         :return: the observed state (processed), the reward and whether the state is final
         """
-        action = self.sample_action(state=state,epsilon=epsilon)
+        if epsilon == -1:
+            action = 1
+        else:
+            action = self.sample_action(state=state,epsilon=epsilon)
         raw_frame, reward, done, info = self.env.step(action)
 
         # Clip rewards to -1,0,1
@@ -225,4 +253,6 @@ class QAgent(object):
             self.net.q_mask: q_mask
         }
         _, summaries, step = self.session.run([self.net._train_op, self.summaries, self.net.global_step], feed_dict=feed)
+
+
         return summaries, step

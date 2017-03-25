@@ -25,7 +25,7 @@ if __name__ == '__main__':
     while True:
         print("\n\n\n")
         # Initielise the episode
-        state = agent._reset_state()
+        state = agent.reset_to_zero_state()
         done = False
         total_reward = 0.
         steps = -1
@@ -36,7 +36,7 @@ if __name__ == '__main__':
             q = agent.session.run(agent.net.q,feed_dict={agent.net.x:state[np.newaxis].astype(np.float32)})
 
             new_frame, reward, done = agent.act(state=state, epsilon=epsilon, store=False)
-            state = agent._update_state(old_state=state, new_frame=new_frame)
+            state = agent.update_state(old_state=state, new_frame=new_frame)
             total_reward += reward
             if reward != 0:
                 print(reward)
