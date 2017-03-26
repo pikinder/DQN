@@ -12,11 +12,11 @@ _It is not an exact reproduction of the original paper._
 * For pre-processing, I crop according to Andrej Karpathy's pre-processing [7]. Convert to RGB and rescale to 84 by 84.
 * On the atari games, the replay memory must use uint8 to limit memory usage.
 * I use _DeterministicPong-v3_ and _DeterministicBreakOut_v3_. This uses the same deterministic frame skipping as in the deepmind publications (4 frames).  This makes learning much faster compared to the _Pong-v0_ and _BreakOut-v0_ environments. 
-* Using a Nvidia Titan X on Pong, the model performs sensible actions after about 2-3 hours. At this point it is not able to beat the AI. To beat the AI (but not consistently) 10**6 frames are needed. To get to this point it took 9.5 hours of training time, which is short for these games. 
+* Using a Nvidia Titan X on Pong, the model performs sensible actions after about 2-3 hours. At this point it is not able to beat the AI. To beat the AI a bit more than 1.3*10**6 frames are needed. To get to this point it took 10 hours of training time, which is short for these games. I did not train longer because of my limited number of GPUs
 
 ## Content
 * **train_agent.py** contains the code to train and save the model. It will write summaries of the training reward per episode, the validation reward, the mse, the regularisation parameter, the mean target q value.
-* **evaluate_agent.py** has code to load a trained model and let it run indefinitely. Currently only Atari Games are supported. By default it will run the included model that is trained for 700 episodes on Pong. It's performance is ok, it can win games but it is not unbeatable. The script shows the following visualisation of game, q-function and value history+reward.
+* **evaluate_agent.py** has code to load a trained model and let it run indefinitely. Currently only Atari Games are supported. By default it will run the included model that is trained for 750 episodes on Pong. It's performance is ok, it can win games but it is not unbeatable. The script shows the following visualisation of game, q-function and value history+reward.
 ![alt text](readme/evaluation_output.png?raw=true "evaluation visualisation")
 
 * **dqn.py** the deep q network implemented in tensorflow. The code supports standard DQN [1] and Double DQN [3]. 
