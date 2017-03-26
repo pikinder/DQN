@@ -6,11 +6,11 @@ import numpy as np
 import tensorflow as tf
 
 from agent import QAgent
-from configs import cartpole_config, pong_config ,breakout_config
+from configs import pong_config ,breakout_config
 from util import get_log_dir
 
 if __name__ == '__main__':
-    config = pong_config
+    config = breakout_config
     log_dir = get_log_dir('log', config['game']+'_'+str(config['double_q']))
     agent = QAgent(config=config, log_dir=log_dir)
     saver = tf.train.Saver()

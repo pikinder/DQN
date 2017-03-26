@@ -23,7 +23,8 @@ breakout_config = {
     'episodes': 10 ** 7,
     'episodes_validate': 100,
     'episodes_validate_runs': 2,
-    'episodes_save_interval': 100,
+    'episodes_save_interval': 50,
+    'tensorboard_interval':1000,
 
     'batch_size': 32,
 

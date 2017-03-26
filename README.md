@@ -11,7 +11,7 @@ _It is not an exact reproduction of the original paper._
 * Loss clipping from DeepMind's nature paper[2] is used. For the implementation I looked at [6]. 
 * For pre-processing, I crop according to Andrej Karpathy's pre-processing [7]. Convert to RGB and rescale to 84 by 84.
 * On the atari games, the replay memory must use uint8 to limit memory usage.
-* I use _DeterministicPong-v3_ and _DeterministicBreakOut_v3_. This uses the same deterministic frame skipping as in the deepmind publications (4 frames).  This makes learning much faster compared to the _Pong-v0_ and _BreakOut-v0_ environments. 
+* I use _PongDeterministic-v3_ and _BreakOutDeterministic_v3_. This uses the same deterministic frame skipping as in the deepmind publications (4 frames). It also disables random actions on the skipped frames. This makes learning much faster compared to the _Pong-v0_ and _BreakOut-v0_ environments (rough estimate: 4 times faster on pong). 
 * Using a Nvidia Titan X on Pong, the model performs sensible actions after about 2-3 hours. At this point it is not able to beat the AI. To beat the AI a bit more than 1.3*10**6 frames are needed. To get to this point it took 10 hours of training time, which is short for these games. I did not train longer because of my limited number of GPUs
 
 ## Content
