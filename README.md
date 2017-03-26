@@ -6,38 +6,36 @@ _It is not an exact reproduction of the original paper._
 
 ## Implementation details
 * The neural net architecture from DeepMind's atari nature publication [2] is used.
-* The code supprts standard DQN (without target network) [1] and Double DQN [3].
+
+* The code supports standard DQN (without target network) [1] and Double DQN [3].
 * Loss clipping from DeepMind's nature paper[2] is used. For the implementation I looked at [6]. 
-* Andrej Karpathy's pre-processing was used here [7] on Pong. Work in progress is more general atari preprocessing that works. (Currently evaluating)
+* For pre-processing, I crop according to Andrej Karpathy's pre-processing [7]. Convert to RGB and rescale to 84 by 84.
 * On the atari games, the replay memory must use uint8 to limit memory usage.
-* OpenAI Gym uses random frame skipping (between 2 and 5) instead of 4 used in the original papers. This might hinder the performance since actions have a non-deterministic outcome.
 * Re-executing the actions on the dropped frames is handled differently by Gym. 
 
 # Notes
-* It is normal that the code appears to learn not much for a couple of hours. Requires about 8 hours on a NVidia Titan X to do something sensible on Pong. But is not godlike ;). 
-* Even though the code learns well on the Pong evironment, over-estimation of the q-values still occurs on classic control tasks. (Have to check whether this is the case for cartpole with DDQN). This would indicate that Double DQN does not fully solve the overestimation problem, but just reduces or delays its effect. But I have to verify this.
-
+* I use _DeterministicPong-v3_ and _DeterministicBreakOut_v3_. This uses the same deterministic frame skipping as in the deepmind publications (4 frames).  This makes learning much faster compared to the _Pong-v0_ and _BreakOut-v0_ environments. 
+* Using a Nvidia Titan X on Pong, the model performs sensible actions after about 2-3 hours. At this point it is not able to beat the AI. To beat the AI (but not consistently) 10**6 frames are needed. To get to this point it took 9.5 hours of training time, which is short for these games. 
 
 ## Content
 * **train_agent.py** contains the code to train and save the model. It will write summaries of the training reward per episode, the validation reward, the mse, the regularisation parameter, the mean target q value.
-* **evaluate_agent.py** has code to load a learned model and let it run indefinitely. Currently only pong is supported. By default it will run the included model that is trained for 1550 episodes on Pong. It's performance is ok, it can win games but it is not unbeatable. The script shows the following visualisation of game, q-function and value history+reward.
+* **evaluate_agent.py** has code to load a trained model and let it run indefinitely. Currently only Atari Games are supported. By default it will run the included model that is trained for 700 episodes on Pong. It's performance is ok, it can win games but it is not unbeatable. The script shows the following visualisation of game, q-function and value history+reward.
 ![alt text](readme/evaluation_output.png?raw=true "evaluation visualisation")
 
 * **dqn.py** the deep q network implemented in tensorflow. The code supports standard DQN [1] and Double DQN [3]. 
 * **agent.py** class for interacting with the environement. 
 * **replay.py** replay memory implementation
-* **config.py** contains the parameter settings for CartPole, AcroBot and Pong.
+* **config.py** contains the parameter settings for CartPole, Pong and BreaKout.
 * **util.py** some basic helper functions
-* **saves/** Checkpoints networks that work reliably on the pong environment
+* **saves/** Checkpoints of networks that work reliably
+* **log/** directory where the tensorboard summaries and the checkpoints are written to.
 
 
 ## Things to be updated
 * Verifying how to sample as quick as possible from the replay memory.
 * Storing the replay memory directly on GPU?
 * Making sure the GPU is better utilised. 
-## Limitations
-The code is only tested on CartPole-v0, CartPole-v1, AcroBot-V0, Pong-v0
-
+* Ensure that the pre-processing works on all games
 
 ## Dependencies
 * Tensorflow 1.0

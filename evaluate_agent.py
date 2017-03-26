@@ -9,22 +9,25 @@ from plot_util import init_figure, update_figure
 import tensorflow as tf
 import numpy as np
 from agent import QAgent
-from configs import pong_config,breakout_config
+from configs import pong_config, breakout_config
 
 if __name__ == '__main__':
-
-
-
     config = pong_config
     config['state_memory']=1 # prevent allocating of a huge chunk of memory
-    epsilon = 0.10 # The epsilon for the strategy
-    params = 'saves/PONG_1550.ckpt'
+    load_episode = 700
+    epsilon = 0.05 # The epsilon for the strategy
+
+    # Build the graph on CPU to keep gpu for training....
     with tf.device('/cpu:0'):
         agent = QAgent(config=config, log_dir=None)
-    tf.train.Saver().restore(agent.session,params)
+
+    # Restore the values....
+    tf.train.Saver().restore(agent.session,'saves/%s/episode_%d.ckpt'%(config['game'],load_episode))
+
+
     while True:
         print("\n\n\n")
-        # Initielise the episode
+        # Initialise the episode
         state = agent.reset_to_zero_state()
         done = False
         total_reward = 0.

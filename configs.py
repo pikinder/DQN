@@ -3,8 +3,8 @@ from __future__ import division
 from __future__ import print_function
 
 import numpy as np
-from dqn import VisualDQN, StateDQN,AtariDQN
-from util import preprocess_pong, preprocess_cartpole,preprocess_atari
+from dqn import StateDQN,AtariDQN
+from util import preprocess_cartpole, preprocess_atari
 
 breakout_config = {
     'double_q': True,
@@ -36,7 +36,8 @@ breakout_config = {
     'gamma': 0.99,
 }
 
-pong_config_atari = {
+
+pong_config = {
     'double_q': True,
     'double_q_freq': 10000,
 
@@ -63,37 +64,6 @@ pong_config_atari = {
     'step_eps_mul': 1.,
 
     'eps_minval': .1,
-
-    'gamma': 0.99,
-}
-
-
-pong_config = {
-    'double_q': True,
-    'double_q_freq': 10000,
-
-    'game': 'Pong',
-    'frame': preprocess_pong,
-    'q': VisualDQN,
-    'q_params': {},
-    'actions': 6,
-    'state_dtype': np.uint8,
-    'state_shape': [80, 80],
-    'state_memory': 10 ** 6,
-    'state_time': 4,
-
-    'episodes': 10 ** 7,
-    'episodes_validate': 5,
-    'episodes_validate_runs': 2,
-    'episodes_save_interval': 50,
-
-    'batch_size': 32,
-
-    'step_startrl': 5 * 10 ** 4,  #
-    'step_eps_min': 1. / (10. ** 6.),
-    'step_eps_mul': 1.,
-
-    'eps_minval': .05,
 
     'gamma': 0.99,
 }

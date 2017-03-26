@@ -23,22 +23,23 @@ def disable_ticks():
 
 
 def init_figure(actions):
-    plt.figure('q_network')
+    plt.figure('q_network',figsize=(15,10))
     plt.clf()
 
     plots = {}
 
-    plt.subplot(2,2,1)
+    plt.subplot(1,2,1)
     ax = plt.gca()
     plots['screen']=(plt.imshow(np.zeros((210,160,3)),interpolation='nearest'),ax)
     disable_ticks()
     plt.subplot(2,2,2)
+    plt.title('Q function')
     ax = plt.gca()
     plots['Qs'] = (ax.bar(range(actions),np.zeros(actions)),ax)
     plt.xticks(.5+np.r_[:actions],[ACTION_MEANING[a] for a in range(actions)])
-    plt.ylabel('Q(s,a)/max_a|Q(s,a)|')
-    plt.ylim(-1,1)
-    plt.subplot(2,1,2)
+    plt.ylabel('Q(s,a)')
+    plt.ylim(-2,2)
+    plt.subplot(2,2,4)
     ax = plt.gca()
     line_q, = ax.plot([], [], 'k', label='max(Q(s,.))', lw=2)
     plots['Qhist']=(line_q,ax)
@@ -49,8 +50,8 @@ def init_figure(actions):
     # Create a legend to the left...
     plt.legend()
     box = ax.get_position()
-    ax.set_position([box.x0, box.y0, box.width * 0.8, box.height])
-    ax.legend(loc='center left', bbox_to_anchor=(1, 0.5))
+    ax.set_position([box.x0, box.y0, box.width, 0.8*box.height])
+    ax.legend(loc='upper center', bbox_to_anchor=(.5,1.3))
     plt.xlabel('frame')
     plt.ylabel('Reward/max Q')
 
@@ -64,13 +65,16 @@ def extend_line(line,pair):
     line.set_data(x,y)
 
 
-def update_figure(plots,step,q,r,img):
+def update_figure(plots,step,q,r,img,max_len=0):
     for rect, yi in zip(plots['Qs'][0], q[0]):
-        rect.set_height(yi/np.abs(q).max())
+        rect.set_height(yi)
     extend_line(plots['Qhist'][0],(step,q.max()))
     if r!=0:
         extend_line(plots['Rhist'][0],(step,r))
-    plots['Qhist'][1].set_xlim([0,step])
+    if max_len:
+        plots['Qhist'][1].set_xlim([step-max_len,step])
+    else:
+        plots['Qhist'][1].set_xlim([0,step])
     plots['Qhist'][1].set_ylim([i*max(1.1,np.max(np.abs(plots['Qhist'][0].get_data()[1]))) for i in [-1.,1.]])
     plots['screen'][0].set_data(img)
     plt.draw()
