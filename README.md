@@ -4,16 +4,13 @@ This is a side project to learn more about reinforcement learning.
 The goal is to have a relatively simple implementation of Deep Q Networks [1,2] that can learn on (some) of the Atari Games. 
 _It is not an exact reproduction of the original paper._
 
-## Implementation details
+## Notes
 * The neural net architecture from DeepMind's atari nature publication [2] is used.
 
 * The code supports standard DQN (without target network) [1] and Double DQN [3].
 * Loss clipping from DeepMind's nature paper[2] is used. For the implementation I looked at [6]. 
 * For pre-processing, I crop according to Andrej Karpathy's pre-processing [7]. Convert to RGB and rescale to 84 by 84.
 * On the atari games, the replay memory must use uint8 to limit memory usage.
-* Re-executing the actions on the dropped frames is handled differently by Gym. 
-
-# Notes
 * I use _DeterministicPong-v3_ and _DeterministicBreakOut_v3_. This uses the same deterministic frame skipping as in the deepmind publications (4 frames).  This makes learning much faster compared to the _Pong-v0_ and _BreakOut-v0_ environments. 
 * Using a Nvidia Titan X on Pong, the model performs sensible actions after about 2-3 hours. At this point it is not able to beat the AI. To beat the AI (but not consistently) 10**6 frames are needed. To get to this point it took 9.5 hours of training time, which is short for these games. 
 
