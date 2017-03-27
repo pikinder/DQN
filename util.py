@@ -41,3 +41,13 @@ def preprocess_atari(frame):
     frame = rgb2gray(frame)*255.
     frame = resize(frame,(84,84))
     return frame[:,:,np.newaxis].astype(np.uint8)
+
+def preprocess_atari_no_crop(frame):
+    """
+    Preprocess the image as suggested on kharpathys blog
+    :param state:
+    :return:
+    """
+    frame = rgb2gray(frame)*255.
+    frame = resize(frame,(84,84))
+    return frame[:,:,np.newaxis].astype(np.uint8)

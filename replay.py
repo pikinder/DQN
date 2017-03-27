@@ -57,8 +57,8 @@ class Experience(object):
         if not self.can_sample(batch_size,state_length):
             raise RuntimeError('Not enough experience....')
 
-        # Line below can be optimised I guess...
-        idx = np.random.permutation(self.count - state_length-1)[:batch_size]
+        # this makes a number of states not sample-able....
+        idx = np.array([np.random.randint(0,self.count - state_length-1) for _ in range(batch_size)])
 
         sample_states =  np.zeros((batch_size,) + tuple(self.states.shape[1:])+(state_length,))
         next_states =  np.zeros((batch_size,) + tuple(self.states.shape[1:])+(state_length,))

@@ -4,14 +4,14 @@ from __future__ import print_function
 
 import numpy as np
 from dqn import StateDQN,AtariDQN
-from util import preprocess_cartpole, preprocess_atari
+from util import preprocess_cartpole, preprocess_atari,preprocess_atari_no_crop
 
 breakout_config = {
     'double_q': True,
     'double_q_freq': 10000,
 
     'game': 'BreakoutDeterministic-v3',
-    'frame': preprocess_atari,
+    'frame': preprocess_atari_no_crop,
     'q': AtariDQN,
     'q_params': {},
     'actions': 6,
@@ -24,7 +24,7 @@ breakout_config = {
     'episodes_validate': 100,
     'episodes_validate_runs': 2,
     'episodes_save_interval': 50,
-    'tensorboard_interval':1000,
+    'tensorboard_interval':100,
 
     'batch_size': 32,
 
@@ -80,7 +80,7 @@ cartpole_config = {
     'actions': 2,
     'state_dtype': np.float32,
     'state_shape': [1, 4],
-    'state_memory': 10 ** 3,
+    'state_memory': 10 ** 4,
     'state_time': 1,
 
     'episodes': 10 ** 7,
