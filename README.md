@@ -5,24 +5,24 @@ The goal is to have a relatively simple implementation of Deep Q Networks [1,2] 
 _It is not an exact reproduction of the original paper._
 
 ## Notes
-* The neural net architecture from DeepMind's atari nature publication [2] is used.
-
-* The code supports standard DQN (without target network) [1] and Double DQN [3].
-* Loss clipping from DeepMind's nature paper [2] is used. For the implementation I looked at [6]. 
-* Pre-processing RGB to grayscale and rescaling to 84 by 84 (this does not preserve the aspect ratio).
-* On the atari games, the replay memory must use uint8 to limit memory usage.
-* I use _PongDeterministic-v3_ and _BreakOutDeterministic_v3_. 
-    This uses the same deterministic frame skipping as in the DeepMind publications (4 frames).
-    It also disables random actions on the skipped frames. 
-    This makes learning much faster compared to the _Pong-v0_ and _BreakOut-v0_ environments 
-    (rough estimate: 4 times faster on pong). 
-* Included the trick that the loss of a life is a terminal state for the atari games. This was used by Mnih at al. in [2].
+* The architecture from DeepMind's nature publication [2] is used.
+* Standard DQN (without target network) [1] and Double DQN [3] is implemented.
+* Loss clipping from DeepMind's nature paper [2] is used. ( The implementation mimics [6].)
+* Pre-processing is done by
+        1. RGB to grayscale conversion
+        2. Rescaling to 84 by 84 (this does not preserve the aspect ratio).
+* On the atari games, the replay memory uses uint8 to reduce memory usage.
+* The atari games are accessed through OpenAI Gym [5] but not using the default environments.
+        1.  _PongDeterministic-v3_ and _BreakOutDeterministic_v3_ are used.
+            This used deterministic frame skipping and action repeating similar to [2].
+            Consequently it learns about 4 times faster compared to the less deterministic _Pong-v0_  environment.
+        2. The loss of a life results in a terminal state. This was used by Mnih at al. in [2].
+        
 ## Content
 * **train_agent.py** contains the code to train and save the model. It will write summaries of the training reward per episode, the validation reward, the mse, the regularisation parameter, the mean target q value.
 * **evaluate_agent.py** has code to load a trained model and let it run indefinitely. 
     The script shows the following visualisation of game, q-function and value history+reward.
 ![alt text](readme/evaluation_output.png?raw=true "evaluation visualisation")
-
 * **dqn.py** the deep q network implemented in tensorflow. The code supports standard DQN [1] and Double DQN [3]. 
 * **agent.py** class for interacting with the environment. 
 * **replay.py** replay memory implementation
