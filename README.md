@@ -9,14 +9,14 @@ _It is not an exact reproduction of the original paper._
 * Standard DQN (without target network) [1] and Double DQN [3] is implemented.
 * Loss clipping from DeepMind's nature paper [2] is used. ( The implementation mimics [6].)
 * Pre-processing is done by
-        1. RGB to grayscale conversion
-        2. Rescaling to 84 by 84 (this does not preserve the aspect ratio).
+    1. RGB to grayscale conversion
+    2. Rescaling to 84 by 84 (this does not preserve the aspect ratio).
 * On the atari games, the replay memory uses uint8 to reduce memory usage.
 * The atari games are accessed through OpenAI Gym [5] but not using the default environments.
-        1.  _PongDeterministic-v3_ and _BreakOutDeterministic_v3_ are used.
+    1.  _PongDeterministic-v3_ and _BreakOutDeterministic_v3_ are used.
             This used deterministic frame skipping and action repeating similar to [2].
             Consequently it learns about 4 times faster compared to the less deterministic _Pong-v0_  environment.
-        2. The loss of a life results in a terminal state. This was used by Mnih at al. in [2].
+    2. The loss of a life results in a terminal state. This was used by Mnih at al. in [2].
         
 ## Content
 * **train_agent.py** contains the code to train and save the model. It will write summaries of the training reward per episode, the validation reward, the mse, the regularisation parameter, the mean target q value.
