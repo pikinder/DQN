@@ -142,16 +142,17 @@ class QAgent(object):
         # Use flags to signal the end of the episode and for pressing the start button
         done = False
         press_fire = True
-
+        ale_lives = None
         total_reward = 0
         while not done:
             if press_fire: # start the episode
                 press_fire = False
-                new_frame,reward,done = self.act(state,-1,True)
-
+                new_frame,reward,done, info = self.act(state,-1,True)
+                if info.has_key('ale.lives'):
+                    ale_lives = info['ale.lives']
             else:
                 self.update_epsilon_and_steps()
-                new_frame,reward,done = self.act(state,self.epsilon,True)
+                new_frame,reward,done, info = self.act(state,self.epsilon,True,ale_lives)
             state = self.update_state(state, new_frame)
             total_reward += reward
 
@@ -174,18 +175,21 @@ class QAgent(object):
         while not done:
             if press_fire:
                 press_fire = False
-                new_frame, reward, done = self.act(state=state, epsilon=-1, store=False)
+                new_frame, reward, done,_ = self.act(state=state, epsilon=-1, store=False)
             else:
-                new_frame, reward, done = self.act(state=state, epsilon=epsilon, store=False)
+                new_frame, reward, done,_ = self.act(state=state, epsilon=epsilon, store=False)
             state = self.update_state(old_state=state, new_frame=new_frame)
             total_reward += reward
             if visualise:
                 self.env.render()
         return total_reward
 
-    def act(self,state,epsilon,store=False):
+    def act(self, state, epsilon, store=False, ale_lives=None):
         """
-        Perform an action in the environment
+        Perform an action in the environment.
+
+        If it is an atari game and there are lives, it will end the episode in the replay memory if a life is lost.
+        This is important in games lik
 
         :param epsilon: the epsilon for the epsilon-greedy strategy. If epsilon is -1, the no-op will be used in the atari games.
         :param state: the state for which to compute the action
@@ -206,8 +210,16 @@ class QAgent(object):
 
         # If needed, store the last frame
         if store:
-            self.replay_memory.add(state[:,:,-1],action,reward,done)
-        return new_frame, reward, done
+            # End episodes if lives are involved in the atari game.
+            # This is important in e.g. breakout
+            # If this is not included, dropping the ball is not penalised.
+            # By marking the end of the reward propagation, the maximum reward is limited
+            # This makes learning faster.
+            store_done = done
+            if ale_lives is not None and info.has_key('ale.lives') and info['ale.lives']<ale_lives:
+                store_done = True
+            self.replay_memory.add(state[:,:,-1],action,reward,store_done)
+        return new_frame, reward, done, info
 
 
     def train_batch(self):

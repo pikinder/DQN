@@ -6,7 +6,7 @@ import numpy as np
 import tensorflow as tf
 
 from agent import QAgent
-from configs import pong_config ,breakout_config
+from configs import pong_config, breakout_config
 from util import get_log_dir
 
 if __name__ == '__main__':
