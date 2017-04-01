@@ -4,7 +4,7 @@ from __future__ import print_function
 
 import numpy as np
 from dqn import StateDQN,AtariDQN
-from util import preprocess_cartpole, preprocess_atari,preprocess_atari_no_crop
+from util import preprocess_cartpole, preprocess_atari_no_crop
 
 breakout_config = {
     'double_q': True,
@@ -43,7 +43,7 @@ pong_config = {
     'double_q_freq': 10000,
 
     'game': 'PongDeterministic-v3',
-    'frame': preprocess_atari,
+    'frame': preprocess_atari_no_crop,
     'q': AtariDQN,
     'q_params': {},
     'actions': 6,
@@ -66,8 +66,9 @@ pong_config = {
 
     'eps_minval': .1,
 
-    'gamma': 0.99,
+    'gamma': 0.95,
 }
+
 
 cartpole_config = {
     'double_q': True,
