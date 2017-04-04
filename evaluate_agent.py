@@ -14,7 +14,7 @@ from configs import pong_config, breakout_config
 if __name__ == '__main__':
     config = pong_config
     config['state_memory']=1 # prevent allocating of a huge chunk of memory
-    load_episode = 1200
+    load_episode = 3650
     epsilon = 0.05 # The epsilon for the strategy
 
     # Build the graph on CPU to keep gpu for training....

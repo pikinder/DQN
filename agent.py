@@ -14,6 +14,7 @@ class QAgent(object):
         self.log_dir = log_dir
 
         self.env = gym.make(config['game'])
+        self.ale_lives = None
 
         self.replay_memory = Experience(
             memory_size=config['state_memory'],
@@ -142,17 +143,16 @@ class QAgent(object):
         # Use flags to signal the end of the episode and for pressing the start button
         done = False
         press_fire = True
-        ale_lives = None
         total_reward = 0
         while not done:
             if press_fire: # start the episode
                 press_fire = False
                 new_frame,reward,done, info = self.act(state,-1,True)
                 if info.has_key('ale.lives'):
-                    ale_lives = info['ale.lives']
+                    self.ale_lives = info['ale.lives']
             else:
                 self.update_epsilon_and_steps()
-                new_frame,reward,done, info = self.act(state,self.epsilon,True,ale_lives)
+                new_frame,reward,done, info = self.act(state,self.epsilon,True)
             state = self.update_state(state, new_frame)
             total_reward += reward
 
@@ -184,7 +184,7 @@ class QAgent(object):
                 self.env.render()
         return total_reward
 
-    def act(self, state, epsilon, store=False, ale_lives=None):
+    def act(self, state, epsilon, store=False):
         """
         Perform an action in the environment.
 
@@ -216,8 +216,9 @@ class QAgent(object):
             # By marking the end of the reward propagation, the maximum reward is limited
             # This makes learning faster.
             store_done = done
-            if ale_lives is not None and info.has_key('ale.lives') and info['ale.lives']<ale_lives:
+            if self.ale_lives is not None and info.has_key('ale.lives') and info['ale.lives']<self.ale_lives:
                 store_done = True
+                self.ale_lives = info['ale.lives']
             self.replay_memory.add(state[:,:,-1],action,reward,store_done)
         return new_frame, reward, done, info
 
